@@ -1,9 +1,16 @@
 FROM python:3.11-slim
+
+# Evita prompts en instalaciones
+ENV PYTHONUNBUFFERED=1 PIP_DISABLE_PIP_VERSION_CHECK=1
+
 WORKDIR /app
-ENV DATA_DIR=/data
-RUN apt-get update && apt-get install -y --no-install-recommends && rm -rf /var/lib/apt/lists/*
+
+# Instala dependencias
 COPY requirements.txt .
-RUN pip install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copia el código
 COPY . .
-EXPOSE 8000
+
+# Railway inyecta $PORT; no pongas default con :-8000
 CMD ["sh","-c","uvicorn app:app --host 0.0.0.0 --port ${PORT}"]
